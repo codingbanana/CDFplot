@@ -1,12 +1,12 @@
-options(error=recover)
-options(show.error.locations=TRUE)
+# options(error=recover)
+# options(show.error.locations=TRUE)
 library(shiny)
 library(ggplot2)
 library(reshape2)
-# library(scales)
-# library(grid)
-# library(gridExtra)
-# library(plyr)
+library(scales)
+library(grid)
+library(gridExtra)
+library(plyr)
 library(Cairo)
 
 #upload size for file set to 40mb
@@ -30,12 +30,11 @@ plot_ecdf <- function(d, column.label, column, xaxis.range, anno.num, anno.txt,a
     x.axis.break.size <- if (x.axis.size > 50) 10 else if (x.axis.size > 25) 5 else  1
     #subsets the data for the plot to only include the percentage of data within the user-determined min and max ranges
     d <- d[d$quantile >= xaxis.range[1] & d$quantile <= xaxis.range[2], ]
-    max.observation <- by(d, INDICES=list(d$source), FUN=function(g) {
-        g[which.max(g$quantile), ]
-    })
-
-    max.observation <- do.call(rbind, max.observation)
-
+#     max.observation <- by(d, INDICES=list(d$source), FUN=function(g) {
+#         g[which.max(g$quantile), ]
+#     })
+#     max.observation <- do.call(rbind, max.observation)
+    max.observation <- d[which.max(d$quantile),]
     ylab.text <- paste(column.label, '(ft, NAVD88)')
 
     #renders the ecdf plot
@@ -56,12 +55,12 @@ plot_ecdf <- function(d, column.label, column, xaxis.range, anno.num, anno.txt,a
         ) +
         guides(col=guide_legend(ncol=1)) +
         ylab(ylab.text) +
-        xlab('Percentage of time less than equal corresponding flow')
+        xlab('Percentage of time less than equal corresponding level')
     #add annotation lines
     if (length(anno.num) > 0) {
-        annotations <- data.frame(yintercept=anno.num, x=rep(min(d$quantile), length(anno.num)), labels=paste(anno.txt, anno.num, 'ft  (',paste(round(100*anno.ecdf, 2), "%", sep=""),')'))
+        annotations <- data.frame(yintercept=anno.num, x=rep(min(d$quantile), length(anno.num)), labels=paste(anno.txt, anno.num, 'ft  (',paste0(round(100*anno.ecdf, 2), "%"),')'))
         p <- p +geom_hline(data=annotations, aes(yintercept=yintercept)) +
-            annotate('text', x=annotations$x, y=annotations$yintercept, label=annotations$labels, size=4, vjust=-.4, hjust=.2)
+            annotate('text', x=annotations$x, y=annotations$yintercept, label=annotations$labels, size=4, vjust=-1, hjust=0,fontface='bold')
     }
     return(p)
 }
