@@ -98,7 +98,7 @@ shinyServer(function(input, output, session){
         if (! is.null(ecdf.source)) {
             d <- d[c('DDATE', ecdf.source)]
             d <- d[complete.cases(d), ]
-            #add a column that saves adjusted value
+            #add a column 'elev' that saves adjusted value
             d$elev <- d[,ecdf.source]+invft
             next.d <- subset(d, DDATE >= time.range[1] & DDATE <= time.range[2])
             trange.label <- paste(format(time.range, format='%Y-%m-%d'), collapse=' -- ')
